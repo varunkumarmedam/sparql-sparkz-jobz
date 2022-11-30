@@ -97,33 +97,52 @@ app.get('/filter', async (req, res) => {
             });
         });
 
+        let queryString = 'PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nPREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nPREFIX owl: <http://www.w3.org/2002/07/owl#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX a:<http://www.semanticweb.org/bharg/ontologies/2022/10/untitled-ontology-35#>\nSELECT DISTINCT ?jobTitle ?jobtype ?jobapplylink ?JD ?Company ?Companyurl ?location\nWHERE {\n ?jobname a:hasJobTitle ?keyword.\n ?jobname a:hasJobTitle ?jobTitle.\n  ?Companyname a:hasName ?Company.\n  ?Companyname a:hasCompanyURL ?Companyurl.\n  ?jobname a:hasJobURL  ?jobapplylink.\n  ?jobname a:hasJobType ?jobtype.\n  ?jobname a:hasDescription ?JD.\n  ?jobname a:hasLocation ?location.\n ';
+        let filterString = '';
+
+        if(req.query.company){
+            filterString = filterString + `\n FILTER (?Company="${req.query.company}")`;
+        }
+
+        if(req.query.jobtitle){
+            filterString = filterString + `\n FILTER CONTAINS (?jobTitle,"${req.query.jobtitle}")`;
+        }
+
+        if(req.query.jobtype){
+            filterString = filterString + `\n FILTER (?jobtype="${req.query.jobtype}")`;
+        }
+
+        if(req.query.location){
+            filterString = filterString + `\n FILTER CONTAINS (?location,"${req.query.location}")`;
+        }
+
         var postData = qs.stringify({
-            'query': 'PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nPREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nPREFIX owl: <http://www.w3.org/2002/07/owl#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX a:<http://www.semanticweb.org/bharg/ontologies/2022/10/untitled-ontology-35#>\nSELECT DISTINCT ?jobTitle ?jobtype ?jobapplylink ?JD ?Company ?Companyurl ?location\nWHERE {\n  ?jobname a:hasJobTitle ?jobTitle.\n  ?Companyname a:hasName ?Company.\n  ?Companyname a:hasCompanyURL ?Companyurl.\n  ?jobname a:hasJobURL  ?jobapplylink.\n  ?jobname a:hasJobType ?jobtype.\n  ?jobname a:hasDescription ?JD.\n  ?jobname a:hasLocation ?location.\n   FILTER (?Company="Sono Bello")\n}'
+            'query': `${queryString} ${filterString} }`
         });
 
-        if (req.query.type == 'company') {
-            postData = qs.stringify({
-                'query': `PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nPREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nPREFIX owl: <http://www.w3.org/2002/07/owl#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX a:<http://www.semanticweb.org/bharg/ontologies/2022/10/untitled-ontology-35#>\nSELECT DISTINCT ?jobTitle ?jobtype ?jobapplylink ?JD ?Company ?Companyurl ?location\nWHERE {\n  ?jobname a:hasJobTitle ?jobTitle.\n  ?Companyname a:hasName ?Company.\n  ?Companyname a:hasCompanyURL ?Companyurl.\n  ?jobname a:hasJobURL  ?jobapplylink.\n  ?jobname a:hasJobType ?jobtype.\n  ?jobname a:hasDescription ?JD.\n  ?jobname a:hasLocation ?location.\n   FILTER (?Company="${req.query.payload}")\n}`
-            });
-        }
+        // if (req.query.type == 'company') {
+        //     postData = qs.stringify({
+        //         'query': `PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nPREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nPREFIX owl: <http://www.w3.org/2002/07/owl#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX a:<http://www.semanticweb.org/bharg/ontologies/2022/10/untitled-ontology-35#>\nSELECT DISTINCT ?jobTitle ?jobtype ?jobapplylink ?JD ?Company ?Companyurl ?location\nWHERE {\n ?jobname a:hasJobTitle ?keyword.\n  ?jobname a:hasJobTitle ?jobTitle.\n  ?Companyname a:hasName ?Company.\n  ?Companyname a:hasCompanyURL ?Companyurl.\n  ?jobname a:hasJobURL  ?jobapplylink.\n  ?jobname a:hasJobType ?jobtype.\n  ?jobname a:hasDescription ?JD.\n  ?jobname a:hasLocation ?location.\n   FILTER (?Company="${req.query.payload}")\n}`
+        //     });
+        // }
 
-        if(req.query.type == 'job-title'){
-            postData = qs.stringify({
-                'query': `PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nPREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nPREFIX owl: <http://www.w3.org/2002/07/owl#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX a:<http://www.semanticweb.org/bharg/ontologies/2022/10/untitled-ontology-35#>\nSELECT DISTINCT ?jobTitle ?jobtype ?jobapplylink ?JD ?Company ?Companyurl ?location\nWHERE {\n  ?jobname a:hasJobTitle ?jobTitle.\n  ?Companyname a:hasName ?Company.\n  ?Companyname a:hasCompanyURL ?Companyurl.\n  ?jobname a:hasJobURL  ?jobapplylink.\n  ?jobname a:hasJobType ?jobtype.\n  ?jobname a:hasDescription ?JD.\n  ?jobname a:hasLocation ?location.\n   FILTER CONTAINS (?jobTitle="${req.query.payload}")\n}`
-            });
-        }
+        // if(req.query.type == 'job-title'){
+        //     postData = qs.stringify({
+        //         'query': `PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nPREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nPREFIX owl: <http://www.w3.org/2002/07/owl#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX a:<http://www.semanticweb.org/bharg/ontologies/2022/10/untitled-ontology-35#>\nSELECT DISTINCT ?jobTitle ?jobtype ?jobapplylink ?JD ?Company ?Companyurl ?location\nWHERE {\n  ?jobname a:hasJobTitle ?jobTitle.\n  ?Companyname a:hasName ?Company.\n  ?Companyname a:hasCompanyURL ?Companyurl.\n  ?jobname a:hasJobURL  ?jobapplylink.\n  ?jobname a:hasJobType ?jobtype.\n  ?jobname a:hasDescription ?JD.\n  ?jobname a:hasLocation ?location.\n   FILTER CONTAINS (?jobTitle="${req.query.payload}")\n}`
+        //     });
+        // }
 
-        if(req.query.type == 'job-type'){
-            postData = qs.stringify({
-                'query': `PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nPREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nPREFIX owl: <http://www.w3.org/2002/07/owl#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX a:<http://www.semanticweb.org/bharg/ontologies/2022/10/untitled-ontology-35#>\nSELECT DISTINCT ?jobTitle ?jobtype ?jobapplylink ?JD ?Company ?Companyurl ?location\nWHERE {\n  ?jobname a:hasJobTitle ?jobTitle.\n  ?Companyname a:hasName ?Company.\n  ?Companyname a:hasCompanyURL ?Companyurl.\n  ?jobname a:hasJobURL  ?jobapplylink.\n  ?jobname a:hasJobType ?jobtype.\n  ?jobname a:hasDescription ?JD.\n  ?jobname a:hasLocation ?location.\n   FILTER (?jobtype="${req.query.payload}")\n}`
-            });
-        }
+        // if(req.query.type == 'job-type'){
+        //     postData = qs.stringify({
+        //         'query': `PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nPREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nPREFIX owl: <http://www.w3.org/2002/07/owl#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX a:<http://www.semanticweb.org/bharg/ontologies/2022/10/untitled-ontology-35#>\nSELECT DISTINCT ?jobTitle ?jobtype ?jobapplylink ?JD ?Company ?Companyurl ?location\nWHERE {\n  ?jobname a:hasJobTitle ?jobTitle.\n  ?Companyname a:hasName ?Company.\n  ?Companyname a:hasCompanyURL ?Companyurl.\n  ?jobname a:hasJobURL  ?jobapplylink.\n  ?jobname a:hasJobType ?jobtype.\n  ?jobname a:hasDescription ?JD.\n  ?jobname a:hasLocation ?location.\n   FILTER (?jobtype="${req.query.payload}")\n}`
+        //     });
+        // }
 
-        if(req.query.type == 'location'){
-            postData = qs.stringify({
-                'query': `PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nPREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nPREFIX owl: <http://www.w3.org/2002/07/owl#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX a:<http://www.semanticweb.org/bharg/ontologies/2022/10/untitled-ontology-35#>\nSELECT DISTINCT ?jobTitle ?jobtype ?jobapplylink ?JD ?Company ?Companyurl ?location\nWHERE {\n  ?jobname a:hasJobTitle ?jobTitle.\n  ?Companyname a:hasName ?Company.\n  ?Companyname a:hasCompanyURL ?Companyurl.\n  ?jobname a:hasJobURL  ?jobapplylink.\n  ?jobname a:hasJobType ?jobtype.\n  ?jobname a:hasDescription ?JD.\n  ?jobname a:hasLocation ?location.\n   FILTER CONTAINS (?location="${req.query.payload}")\n}`
-            });
-        }
+        // if(req.query.type == 'location'){
+        //     postData = qs.stringify({
+        //         'query': `PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nPREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nPREFIX owl: <http://www.w3.org/2002/07/owl#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX a:<http://www.semanticweb.org/bharg/ontologies/2022/10/untitled-ontology-35#>\nSELECT DISTINCT ?jobTitle ?jobtype ?jobapplylink ?JD ?Company ?Companyurl ?location\nWHERE {\n  ?jobname a:hasJobTitle ?jobTitle.\n  ?Companyname a:hasName ?Company.\n  ?Companyname a:hasCompanyURL ?Companyurl.\n  ?jobname a:hasJobURL  ?jobapplylink.\n  ?jobname a:hasJobType ?jobtype.\n  ?jobname a:hasDescription ?JD.\n  ?jobname a:hasLocation ?location.\n   FILTER CONTAINS (?location="${req.query.payload}")\n}`
+        //     });
+        // }
 
         api_req.write(postData);
 
