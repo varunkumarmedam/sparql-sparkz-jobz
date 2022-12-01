@@ -43,8 +43,8 @@
 		}
 
 		.overflow-hidden {
-			height: 50px;
-			overflow: hidden
+			height: 100px;
+			overflow: auto
 		}
 
 		.searchableArea {
@@ -276,7 +276,7 @@
 								{results.map((job) =>
 									<tr>
 										<td>
-											<a href="{job.Companyurl.value}">
+											<a href={job.Companyurl.value} target="_blank">
 												{job.Company.value}
 											</a>
 										</td>
@@ -295,7 +295,7 @@
 											{job.location.value}
 										</td>
 										<td>
-											<a href="{job.jobapplylink.value}">Apply</a>
+											<a href={job.jobapplylink.value} target="_blank">Apply</a>
 										</td>
 									</tr>
 								)}
