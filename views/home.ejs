@@ -11,7 +11,9 @@
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Rubik+Glitch&display=swap" rel="stylesheet">
-
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Rubik+Glitch&family=Zen+Dots&display=swap" rel="stylesheet">
 	<style type="text/css" media="screen">
 		*,
 		::after,
@@ -83,6 +85,18 @@
 			animation-delay: 0;
 		}
 
+		.no-jobs {
+			display: grid;
+			margin-top: 100px;
+			align-items: center;
+			justify-content: center;
+			text-align: center;
+		}
+
+		.zen-font {
+			font-family: 'Rubik Glitch', cursive;
+			font-family: 'Zen Dots', cursive;
+		}
 		@keyframes lds-facebook {
 			0% {
 				top: 4px;
@@ -200,7 +214,7 @@
 			const [company, setCompany] = useState('Sono Bello');
 			const [jobtype, setJobtype] = useState()
 			const [location, setLocation] = useState('Texas')
-			const [jobsFound, setJobsFound] = useState(null)
+			const [isApiCallMade, setisApiCallMade] = useState(false)
 
 			async function startSearch() {
 				let query = '';
@@ -222,7 +236,7 @@
 					.then((data) => data.json())
 					.then((data) => {
 						setResults(data.results.bindings)
-						setJobsFound(data.results.bindings.length)
+						setisApiCallMade(true)
 					}).finally(() => setIsLoading(false));
 			}
 			const dropdownChange = (e) => {
@@ -236,7 +250,7 @@
 							<div class="animation">
 								<div class="first"><div>Contract</div></div>
 								<div class="second"><div>Software Engineer</div></div>
-								<div class="third"><div>Samsung</div></div>
+								<div class="third"><div>Sono Bello</div></div>
 							</div>
 						</div>
 						<div className="searchableArea col-12 w-100">
@@ -258,51 +272,59 @@
 							{isLoading ? <div className="lds-facebook"><div className="loader"></div><div className="loader"></div><div className="loader"></div></div> : <button type="button" className="btn btn-success" onClick={() => { startSearch() }}>Search</button>}
 
 						</div>
+						<div>
+							{results.length ? <div className="mt-3 text-center zen-font">{results.length} job(s) found 😀</div> : ''}
+						</div>
 					</div>
-					<div className="p-5">
-						{results.length > 0 && <table className="table table-hover p-3">
-							<thead className="table-header">
-								<tr>
-									<th scope="col">Company</th>
-									<th scope="col">Job Title</th>
-									<th scope="col">Job Description</th>
-									<th scope="col">Job Type</th>
-									<th scope="col">Location</th>
-									<th scope="col">Application link</th>
-								</tr>
-							</thead>
-
-							<tbody>
-								{results.map((job) =>
+					{results.length ?
+						<div className="pl-5 pr-5">
+							{results.length > 0 && <table className="table table-hover p-3">
+								<thead className="table-header">
 									<tr>
-										<td>
-											<a href={job.Companyurl.value} target="_blank">
-												{job.Company.value}
-											</a>
-										</td>
-										<td>
-											{job.jobTitle.value}
-										</td>
-										<td>
-											<div className="overflow-hidden">
-												{job.JD.value}
-											</div>
-										</td>
-										<td>
-											{job.jobtype.value}
-										</td>
-										<td>
-											{job.location.value}
-										</td>
-										<td>
-											<a href={job.jobapplylink.value} target="_blank">Apply</a>
-										</td>
+										<th scope="col">Company</th>
+										<th scope="col">Job Title</th>
+										<th scope="col">Job Description</th>
+										<th scope="col">Job Type</th>
+										<th scope="col">Location</th>
+										<th scope="col">Application link</th>
 									</tr>
-								)}
-							</tbody>
-						</table>
-						}
-					</div>
+								</thead>
+
+								<tbody>
+									{results.map((job) =>
+										<tr>
+											<td>
+												<a href={job.Companyurl.value} target="_blank">
+													{job.Company.value}
+												</a>
+											</td>
+											<td>
+												{job.jobTitle.value}
+											</td>
+											<td>
+												<div className="overflow-hidden">
+													{job.JD.value}
+												</div>
+											</td>
+											<td>
+												{job.jobtype.value}
+											</td>
+											<td>
+												{job.location.value}
+											</td>
+											<td>
+												<a href={job.jobapplylink.value} target="_blank">Apply</a>
+											</td>
+										</tr>
+									)}
+								</tbody>
+							</table>
+							}
+						</div>
+						: isApiCallMade? <div className="no-jobs">
+							<img src="https://stickershop.line-scdn.net/stickershop/v1/product/14056790/LINEStorePC/main.png" />
+							<h4 className="text-muted mt-4 zen-font">No jobs found</h4>
+						</div> : ''}
 				</>
 			);
 		}
